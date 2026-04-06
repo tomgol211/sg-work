@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צור קשר</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <!-- Header -->
+        <h1 class="text-2xl font-bold text-gray-800 mb-2 text-center">השאירו פרטים</h1>
+        <p class="text-gray-600 mb-6 text-center text-sm">מלאו את הטופס ואחזור אליכם בהקדם.</p>
+
+        <!-- The Form -->
+        <form id="leadForm" class="space-y-4">
+            
+            <!-- Honeypot (Spam Protection) - Hidden from humans -->
+            <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">שם מלא</label>
+                <input type="text" name="name" required 
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">טלפון</label>
+                <input type="tel" name="phone" required 
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <button type="submit" id="submitBtn"
+                class="w-full bg-blue-600 text-white font-semibold py-3 rounded-md hover:bg-blue-700 transition duration-200">
+                שלח פרטים
+            </button>
+        </form>
+
+        <!-- Success Message (Hidden by default) -->
+        <div id="successMsg" class="hidden text-center py-10">
+            <div class="text-green-500 text-5xl mb-4">✓</div>
+            <h2 class="text-xl font-bold text-gray-800">תודה רבה!</h2>
+            <p class="text-gray-600">הפרטים התקבלו, נשתמע בקרוב.</p>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE THIS with your actual Google Script URL
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwJcDAi6HqMYPjDVQRv3UnEuliMhUviznxZHZf5U4TWbcrHHGS0RlOalhYR0sPmHNT1/exec';
+        
+        const form = document.getElementById('leadForm');
+        const successMsg = document.getElementById('successMsg');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            // Visual feedback
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'שולח...';
+
+            // Send data using Fetch
+            fetch(scriptURL, { 
+                method: 'POST', 
+                mode: 'no-cors', // Important for Google Apps Script
+                body: new FormData(form)
+            })
+            .then(() => {
+                // Since we use 'no-cors', we assume success
+                form.classList.add('hidden');
+                successMsg.classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                alert('קרתה תקלה, נסו שוב מאוחר יותר.');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'שלח פרטים';
+            });
+        });
+    </script>
+
+</body>
+</html>
